@@ -4,7 +4,9 @@
 package steven.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -15,6 +17,9 @@ import java.awt.event.MouseEvent;
  */
 public class Test{
 	public static void main(final String[] args){
+		for(final Font font : GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts()){
+			System.out.println(font);
+		}
 		final GuiWindow w = new GuiWindow();
 		final GameController ctrl = new GameController(w);
 		w.setSize(1024, 768);
@@ -29,6 +34,7 @@ public class Test{
 }
 
 class GameController extends MouseEventAdapter implements GuiPaintCallback, GuiAfterPaintCallback, KeyListener{
+	private static final Font MONOSPACED = new Font("Consolas", Font.PLAIN, 24);
 	private final GuiWindow window;
 
 	GameController(final GuiWindow window){
@@ -41,6 +47,10 @@ class GameController extends MouseEventAdapter implements GuiPaintCallback, GuiA
 	public void paint(final Graphics2D g, final int canvasWidth, final int canvasHeight){
 		g.setBackground(Color.WHITE);
 		g.clearRect(0, 0, canvasWidth, canvasHeight);
+		g.setColor(Color.RED);
+		g.setFont(MONOSPACED);
+		g.drawString("一二三123onetwothreeijlmw", 100, 100);
+		g.drawString("wmljieerhtowteno321三二一", 100, 120);
 		//g.setColor(Color.RED);
 		//g.fillOval(this.mouseX - this.ballRadius, this.mouseY - this.ballRadius, this.ballRadius * 2, this.ballRadius * 2);
 	}

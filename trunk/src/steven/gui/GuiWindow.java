@@ -4,14 +4,13 @@
 package steven.gui;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.event.KeyListener;
 import java.awt.image.VolatileImage;
 
 import javax.swing.JFrame;
+
+import steven.gui.utility.GuiUtility;
 
 /**
  * @author Steven
@@ -88,7 +87,7 @@ class GuiFrame extends JFrame{
 	GuiFrame(final GuiPaintCallback paintCallback, final GuiAfterPaintCallback afterPaintCallback){
 		this.paintCallback = paintCallback;
 		this.afterPaintCallback = afterPaintCallback;
-		this.buffer = createCompatibleVolatileImage(1, 1, Transparency.OPAQUE);
+		this.buffer = GuiUtility.createCompatibleVolatileImage(1, 1, Transparency.OPAQUE);
 		this.needRepaint = false;
 		this.lastTick = System.currentTimeMillis();
 		this.averageRenderTickSpent = 0;
@@ -101,13 +100,7 @@ class GuiFrame extends JFrame{
 		if(this.paintCallback != null){
 			if(super.isVisible()){
 				final long startTick = System.currentTimeMillis();
-				do{
-					validateBuffer();
-					final Graphics2D g2d = this.buffer.createGraphics();
-					this.paintCallback.paint(g2d, super.getWidth(), super.getHeight());
-					g2d.dispose();
-					g.drawImage(this.buffer, 0, 0, null);
-				}while(this.buffer.contentsLost());
+				this.buffer = GuiUtility.render(g, this.buffer, this.paintCallback);
 				this.needRepaint = false;
 				final long currentTick = System.currentTimeMillis();
 				this.lastRenderTickSpent = currentTick - startTick;
@@ -123,7 +116,7 @@ class GuiFrame extends JFrame{
 	@Override
 	public void setSize(final int width, final int height){
 		super.setSize(width, height);
-		this.buffer = createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
+		this.buffer = GuiUtility.createCompatibleVolatileImage(width, height, Transparency.OPAQUE);
 	}
 	@Override
 	public void repaint(){
@@ -131,19 +124,6 @@ class GuiFrame extends JFrame{
 			this.needRepaint = true;
 			super.repaint();
 		}
-	}
-	private void validateBuffer(){
-		final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-		while(this.buffer.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE){
-			this.buffer = createCompatibleVolatileImage(super.getWidth(), super.getHeight(), Transparency.OPAQUE, gc);
-		}
-	}
-	private static VolatileImage createCompatibleVolatileImage(final int width, final int height, final int transparency){
-		final GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-		return createCompatibleVolatileImage(width, height, transparency, gc);
-	}
-	private static VolatileImage createCompatibleVolatileImage(final int width, final int height, final int transparency, final GraphicsConfiguration gc){
-		return gc.createCompatibleVolatileImage(width, height, transparency);
 	}
 	public final void setPaintCallback(final GuiPaintCallback paintCallback){
 		this.paintCallback = paintCallback;
