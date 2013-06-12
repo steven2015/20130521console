@@ -8,5 +8,5 @@ package steven.gui;
  * 
  */
 public interface GuiAfterPaintCallback{
-	public void afterPaint(long tickSpent, double averageTickSpent, double averagePaintPeriod);
+	public void afterPaint(long sleepTickSpent, long renderTickSpent);
 }
