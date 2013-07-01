@@ -59,8 +59,11 @@ public final class GuiUtility{
 			}
 			tmp = GuiUtility.validateVolatileImage(tmp);
 			final Graphics2D g2d = tmp.createGraphics();
-			callback.paint(g2d, tmp.getWidth(), tmp.getHeight());
-			g2d.dispose();
+			try{
+				callback.paint(g2d, tmp.getWidth(), tmp.getHeight());
+			}finally{
+				g2d.dispose();
+			}
 			g.drawImage(tmp, 0, 0, null);
 		}while(tmp.contentsLost());
 		return tmp;
